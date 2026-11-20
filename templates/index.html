@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MS Local Transfer</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo" aria-hidden="true">MS</div>
+    <div>
+      <h1>MS Local Transfer</h1>
+      <p>Android &rarr; KaiOS &bull; Same Wi-Fi &bull; No Internet</p>
+    </div>
+  </div>
+  <div class="status" id="serverStatus">
+    <span class="dot {% if wifi_ok %}on{% else %}warn{% endif %}"></span>
+    <span id="statusText">{% if wifi_ok %}Server Online{% else %}No Wi-Fi IP{% endif %}</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- Server information -->
+  <section class="card">
+    <h2>Server Information</h2>
+    <div class="info-grid">
+      <div><span>Local IP</span><strong id="ipText">{{ ip }}</strong></div>
+      <div><span>Port</span><strong>{{ port }}</strong></div>
+      <div><span>Max upload</span><strong>{{ max_upload_mb }} MB</strong></div>
+      <div><span>Files stored</span><strong id="fileCountText">{{ file_count }} files &bull; {{ total_size_human }}</strong></div>
+    </div>
+    <label class="url-label" for="receiverUrl">KaiOS Receiver URL &mdash; open this on the KaiOS phone</label>
+    <div class="url-row">
+      <input id="receiverUrl" type="text" readonly value="{{ receiver_url }}">
+      <button class="btn btn-primary" id="copyBtn" type="button">Copy URL</button>
+    </div>
+    <p class="hint" id="copyHint">Open <a href="/receiver">/receiver</a> on this phone to preview the KaiOS page.</p>
+    {% if pin_enabled %}
+    <p class="warn">Transfer PIN is enabled. Enter it below before uploading or deleting.</p>
+    <label class="url-label" for="pinInput">Transfer PIN</label>
+    <input id="pinInput" type="password" placeholder="Enter PIN" autocomplete="off">
+    {% else %}
+    <p class="warn">Anyone connected to this Wi-Fi network can open this server and download files. Set a PIN with <code>MS_TRANSFER_PIN=1234</code> to protect uploads and deletes.</p>
+    {% endif %}
+  </section>
+
+  <!-- Upload -->
+  <section class="card">
+    <h2>Send Files to KaiOS</h2>
+    <label class="select-btn" for="fileInput">+ Select Files</label>
+    <input id="fileInput" type="file" multiple hidden>
+    <p class="hint">Images, videos, audio, documents, ZIP &mdash; any file type. Multiple files at once.</p>
+
+    <div id="selectedList" class="file-list"></div>
+    <div id="totalRow" class="total-row" hidden>
+      <span>Total selected:</span>
+      <strong id="totalSize">0 B</strong>
+      <span id="totalCount"></span>
+    </div>
+
+    <button class="btn btn-primary btn-big" id="uploadBtn" type="button" disabled>Upload</button>
+
+    <div id="progressWrap" class="progress-wrap" hidden>
+      <div class="progress-top">
+        <span id="currentFile">Uploading&hellip;</span>
+        <strong id="percentText">0%</strong>
+      </div>
+      <div class="progress-bar"><div id="progressFill"></div></div>
+      <p class="progress-sub"><span id="uploadedSize">0 B</span> / <span id="totalUploadSize">0 B</span></p>
+    </div>
+    <p id="message" class="message" role="status"></p>
+  </section>
+
+  <!-- History -->
+  <section class="card">
+    <div class="card-head">
+      <h2>Transfer History</h2>
+      <button class="btn btn-danger-outline" id="clearBtn" type="button">Clear History</button>
+    </div>
+    <p class="hint">Recently uploaded files &mdash; these are the files the KaiOS phone can download.</p>
+    <div id="historyList" class="file-list"></div>
+    <p id="historyEmpty" class="empty">No files uploaded yet.</p>
+    <button class="btn btn-ghost" id="refreshBtn" type="button">Refresh</button>
+  </section>
+
+  <footer class="foot">MS Local Transfer &bull; Local only &bull; Files are stored in the <code>uploads</code> folder on the server.</footer>
+</main>
+
+<script>
+  window.MS_TRANSFER = { pinEnabled: {{ 'true' if pin_enabled else 'false' }}, maxUploadMB: {{ max_upload_mb }} };
+</script>
+<script src="/static/js/app.js"></script>
+</body>
+</html>

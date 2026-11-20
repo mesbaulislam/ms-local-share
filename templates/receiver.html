@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MS Local Transfer - Receiver</title>
+<link rel="stylesheet" href="/static/css/receiver.css">
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="title">MS Local Transfer</div>
+    <div class="conn"><span class="dot"></span> Connected</div>
+  </div>
+
+  <div class="storage">
+    <span id="storageText">{{ file_count }} file(s) &bull; {{ total_size_human }}</span>
+  </div>
+
+  <!-- Server-rendered list: works even with JavaScript switched off. -->
+  <div class="list" id="fileList">
+    {% if files %}
+      {% for f in files %}
+      <div class="item">
+        <div class="name">{{ f.name }}</div>
+        <div class="meta">{{ f.extension | upper }} &bull; {{ f.size_human }} &bull; {{ f.uploaded_at }}</div>
+        <a class="dl" href="{{ f.download_url }}">Download</a>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty">No files received yet.</div>
+    {% endif %}
+  </div>
+
+  <div class="actions">
+    <a class="btn" href="/receiver">Refresh Files</a>
+  </div>
+
+  <div class="foot">Server: {{ url }}<br>Open this page again to check for new files.</div>
+</div>
+<script src="/static/js/receiver.js"></script>
+</body>
+</html>
